@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏥 Medical Diagnosis Predictor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-stethoscope"></i>
+                <h1>Medical Diagnosis Predictor</h1>
+            </div>
+            <p class="subtitle">AI-powered disease prediction system using machine learning</p>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Prediction Result Card -->
+            <div class="result-card" id="resultCard">
+                <div class="result-header">
+                    <i class="fas fa-clipboard-check"></i>
+                    <h2>Prediction Result</h2>
+                </div>
+                <div class="result-body" id="resultBody">
+                    <div class="placeholder">
+                        <i class="fas fa-heartbeat"></i>
+                        <p>Enter patient data and click "Predict Diagnosis" to see results</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Form -->
+            <div class="form-container">
+                <div class="form-header">
+                    <i class="fas fa-user-md"></i>
+                    <h2>Patient Information</h2>
+                </div>
+                
+                <form id="diagnosisForm">
+                    <!-- Personal Information -->
+                    <div class="form-section">
+                        <h3><i class="fas fa-user"></i> Personal Details</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="age">
+                                    <i class="fas fa-birthday-cake"></i> Age (years)
+                                </label>
+                                <div class="input-with-slider">
+                                    <input type="range" id="ageSlider" min="0" max="100" value="30" class="slider">
+                                    <div class="slider-value">
+                                        <input type="number" id="age" name="age" min="0" max="100" value="30">
+                                        <span>years</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="gender">
+                                    <i class="fas fa-venus-mars"></i> Gender
+                                </label>
+                                <div class="gender-buttons">
+                                    <button type="button" class="gender-btn active" data-value="Male">
+                                        <i class="fas fa-mars"></i> Male
+                                    </button>
+                                    <button type="button" class="gender-btn" data-value="Female">
+                                        <i class="fas fa-venus"></i> Female
+                                    </button>
+                                </div>
+                                <input type="hidden" id="gender" name="gender" value="Male">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Symptoms Section -->
+                    <div class="form-section">
+                        <h3><i class="fas fa-thermometer-half"></i> Symptoms Severity (0-3)</h3>
+                        <div class="symptoms-grid">
+                            {% for symptom, info in symptom_info.items() %}
+                            <div class="symptom-card">
+                                <div class="symptom-header">
+                                    <span class="symptom-emoji">{{ info.emoji }}</span>
+                                    <span class="symptom-name">{{ info.name }}</span>
+                                </div>
+                                <p class="symptom-desc">{{ info.description }}</p>
+                                <div class="severity-control">
+                                    <div class="severity-labels">
+                                        <span>None</span>
+                                        <span>Mild</span>
+                                        <span>Moderate</span>
+                                        <span>Severe</span>
+                                    </div>
+                                    <input type="range" id="{{ symptom }}Slider" min="0" max="3" value="0" 
+                                           class="symptom-slider" data-symptom="{{ symptom }}">
+                                    <div class="severity-value">
+                                        <span class="value-display" id="{{ symptom }}Value">0</span>
+                                        <input type="hidden" id="{{ symptom }}" name="{{ symptom }}" value="0">
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Vital Signs -->
+                    <div class="form-section">
+                        <h3><i class="fas fa-heartbeat"></i> Vital Signs</h3>
+                        <div class="form-grid">
+                            {% for vital, info in vital_info.items() %}
+                            {% if vital not in ['age', 'gender'] %}
+                            <div class="form-group">
+                                <label for="{{ vital }}">
+                                    {{ info.emoji }} {{ info.name }}
+                                    <span class="unit">({{ info.description }})</span>
+                                </label>
+                                <div class="input-with-slider">
+                                    <input type="range" id="{{ vital }}Slider" 
+                                           min="{{ info.min }}" max="{{ info.max }}" 
+                                           value="{{ (info.min + info.max) // 2 }}" class="slider">
+                                    <div class="slider-value">
+                                        <input type="number" id="{{ vital }}" name="{{ vital }}" 
+                                               min="{{ info.min }}" max="{{ info.max }}"
+                                               value="{{ (info.min + info.max) // 2 }}">
+                                        {% if vital == 'temperature_c' %}
+                                        <span>°C</span>
+                                        {% elif vital == 'oxygen_saturation' %}
+                                        <span>%</span>
+                                        {% elif vital in ['systolic_bp', 'diastolic_bp'] %}
+                                        <span>mmHg</span>
+                                        {% elif vital == 'heart_rate' %}
+                                        <span>bpm</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Lab Tests -->
+                    <div class="form-section">
+                        <h3><i class="fas fa-flask"></i> Lab Test Results</h3>
+                        <div class="form-grid">
+                            {% for test, info in lab_info.items() %}
+                            <div class="form-group">
+                                <label for="{{ test }}">
+                                    {{ info.emoji }} {{ info.name }}
+                                    <span class="unit">({{ info.description }})</span>
+                                </label>
+                                <div class="input-with-slider">
+                                    <input type="range" id="{{ test }}Slider" 
+                                           min="{{ info.min }}" max="{{ info.max }}" 
+                                           value="{{ (info.min + info.max) // 2 }}" class="slider">
+                                    <div class="slider-value">
+                                        <input type="number" id="{{ test }}" name="{{ test }}" 
+                                               min="{{ info.min }}" max="{{ info.max }}"
+                                               value="{{ (info.min + info.max) // 2 }}">
+                                        {% if test == 'glucose_level' %}
+                                        <span>mg/dL</span>
+                                        {% elif test == 'hemoglobin' %}
+                                        <span>g/dL</span>
+                                        {% else %}
+                                        <span>count</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="form-actions">
+                        <button type="button" id="resetBtn" class="btn btn-secondary">
+                            <i class="fas fa-redo"></i> Reset Form
+                        </button>
+                        <button type="submit" id="predictBtn" class="btn btn-primary">
+                            <i class="fas fa-brain"></i> Predict Diagnosis
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Probability Distribution -->
+            <div class="probability-card" id="probabilityCard">
+                <div class="probability-header">
+                    <i class="fas fa-chart-bar"></i>
+                    <h2>Probability Distribution</h2>
+                </div>
+                <div class="probability-body" id="probabilityBody">
+                    <div class="placeholder">
+                        <i class="fas fa-chart-pie"></i>
+                        <p>Prediction results will appear here</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-info">
+                    <h3><i class="fas fa-info-circle"></i> About This System</h3>
+                    <p>This AI-powered medical diagnosis system uses machine learning to predict diseases based on symptoms, vital signs, and lab results. It is designed for educational purposes only.</p>
+                    <p class="disclaimer">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>Disclaimer:</strong> This is not a substitute for professional medical advice. Always consult with a healthcare provider for accurate diagnosis.
+                    </p>
+                </div>
+                <div class="footer-stats">
+                    <h3><i class="fas fa-chart-line"></i> System Info</h3>
+                    <div class="stats-grid">
+                        <div class="stat">
+                            <i class="fas fa-disease"></i>
+                            <span>5 Diseases</span>
+                        </div>
+                        <div class="stat">
+                            <i class="fas fa-sliders-h"></i>
+                            <span>18 Features</span>
+                        </div>
+                        <div class="stat">
+                            <i class="fas fa-brain"></i>
+                            <span>AI Model</span>
+                        </div>
+                        <div class="stat">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Secure</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2024 Medical Diagnosis Predictor | Machine Learning Project</p>
+                <div class="footer-links">
+                    <a href="#"><i class="fas fa-code"></i> GitHub</a>
+                    <a href="#"><i class="fas fa-book"></i> Documentation</a>
+                    <a href="#"><i class="fas fa-envelope"></i> Contact</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Loading Modal -->
+    <div class="modal" id="loadingModal">
+        <div class="modal-content">
+            <div class="loader">
+                <i class="fas fa-cogs fa-spin"></i>
+            </div>
+            <h3>Analyzing Patient Data</h3>
+            <p>Our AI model is processing the information...</p>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
