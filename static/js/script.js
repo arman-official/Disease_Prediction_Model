@@ -1,10 +1,8 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize all sliders and inputs
     initializeSliders();
     initializeGenderButtons();
     initializeForm();
     
-    // Disease colors mapping
     const diseaseColors = {
         'COVID-19': '#FF6B6B',
         'Dengue': '#FFA726',
@@ -13,7 +11,6 @@ document.addEventListener('DOMContentLoaded', function() {
         'Pneumonia': '#AB47BC'
     };
     
-    // Disease emojis mapping
     const diseaseEmojis = {
         'COVID-19': '🦠',
         'Dengue': '🦟',
@@ -81,7 +78,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Initialize form
     function initializeForm() {
         const form = document.getElementById('diagnosisForm');
         const resetBtn = document.getElementById('resetBtn');

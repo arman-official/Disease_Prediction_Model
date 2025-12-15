@@ -12,12 +12,36 @@
 <body>
     <div class="container">
         <!-- Header -->
+                <!-- Header -->
         <header class="header">
-            <div class="logo">
-                <i class="fas fa-stethoscope"></i>
-                <h1>Medical Diagnosis Predictor</h1>
+            <div class="logo-container">
+                <div class="logo-icon">
+                    <i class="fas fa-heartbeat"></i>
+                </div>
+                <div class="header-title">
+                    <h1>Medical Diagnosis Assistant</h1>
+                    <p class="subtitle">Clinical Decision Support System v2.0</p>
+                </div>
             </div>
-            <p class="subtitle">AI-powered disease prediction system using machine learning</p>
+            
+            <div class="header-stats">
+                <div class="stat-item">
+                    <i class="fas fa-database"></i>
+                    <span>3,000 Patient Records</span>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-robot"></i>
+                    <span>ML-Powered Analysis</span>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>HIPAA Compliant</span>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-bolt"></i>
+                    <span>Real-time Diagnosis</span>
+                </div>
+            </div>
         </header>
 
         <!-- Main Content -->
@@ -99,9 +123,10 @@
                                     <input type="range" id="{{ symptom }}Slider" min="0" max="3" value="0" 
                                            class="symptom-slider" data-symptom="{{ symptom }}">
                                     <div class="severity-value">
-                                        <span class="value-display" id="{{ symptom }}Value">0</span>
-                                        <input type="hidden" id="{{ symptom }}" name="{{ symptom }}" value="0">
-                                    </div>
+    <span class="value-display" id="{{ symptom }}Value">0</span>
+    <span class="severity-text" id="{{ symptom }}Text">None</span>
+    <input type="hidden" id="{{ symptom }}" name="{{ symptom }}" value="0">
+</div>
                                 </div>
                             </div>
                             {% endfor %}
