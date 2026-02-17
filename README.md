@@ -13,7 +13,7 @@
   <p><em>An intelligent clinical decision support system powered by machine learning</em></p>
   
   <p>
-    <a href="https://disease-pred-model.up.railway.app](https://diseasepredmodel-production.up.railway.app" target="_blank">
+    <a href="https://diseasepredmodel-production.up.railway.app/" target="_blank">
       <img src="https://img.shields.io/badge/LIVE-DEMO-brightgreen?style=for-the-badge&logo=vercel" alt="Live Demo">
     </a>
     <a href="#-features">
